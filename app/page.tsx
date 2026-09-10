@@ -17,13 +17,23 @@ export default async function Home() {
       <h1 className="text-2xl font-semibold">
         Hola, {sesion.nombre} ({sesion.cargo})
       </h1>
-      <p className="text-gray-600">Sprint 2 en construcción.</p>
+
+      <Link
+        href="/ingreso"
+        className="rounded bg-black px-6 py-3 text-lg font-medium text-white"
+      >
+        Ingreso al gimnasio →
+      </Link>
 
       <div className="flex flex-col items-center gap-2">
-        {/* RF-VEN-01: la venta la puede hacer Recepcionista, Coach o
-            Gerente por igual, así que este link es para cualquiera. */}
+        {/* RF-VEN-01 / RF-USR-04: venta y disponibilidad las puede hacer
+            Recepcionista, Coach o Gerente por igual, así que estos links
+            son para cualquiera. */}
         <Link href="/socios" className="text-blue-600 hover:underline">
           Socios →
+        </Link>
+        <Link href="/coaches" className="text-blue-600 hover:underline">
+          Disponibilidad de coaches →
         </Link>
 
         {sesion.cargo === "gerente" && (
