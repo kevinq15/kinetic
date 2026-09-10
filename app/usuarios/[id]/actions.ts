@@ -96,6 +96,15 @@ export type EstadoState = {
   ok?: boolean;
 };
 
+// Forma de la fila que devuelve la función de Postgres
+// entrenamientos_pendientes(coach_id). supabase-js no conoce este tipo
+// porque no generamos los tipos de la base (eso queda como mejora
+// futura); se lo decimos a mano acá para que TypeScript no se queje.
+type EntrenamientosPendientes = {
+  cantidad: number;
+  monto: number;
+};
+
 export async function cambiarEstadoAction(
   _prevState: EstadoState,
   formData: FormData
@@ -143,9 +152,10 @@ export async function cambiarEstadoAction(
       .maybeSingle();
 
     if (coach) {
-      const { data: pendientes } = await supabaseAdmin
+      const { data } = await supabaseAdmin
         .rpc("entrenamientos_pendientes", { p_coach_id: coach.id })
         .single();
+      const pendientes = data as EntrenamientosPendientes | null;
 
       if (pendientes && pendientes.cantidad > 0) {
         return {
