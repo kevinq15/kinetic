@@ -16,3 +16,15 @@ export function hoyArgentinaDiaMes(): { dia: number; mes: number } {
   const [, mes, dia] = hoyArgentinaISO().split("-").map(Number);
   return { dia, mes };
 }
+
+// Ayer en Argentina, como "YYYY-MM-DD". Se usa como tope (`max`) del
+// selector de fecha de corte en liquidaciones (RF-LIQ-05): la fecha de
+// corte tiene que ser anterior a hoy, nunca hoy ni el futuro — si se
+// permitiera "hoy", la liquidación se comería entrenamientos que todavía
+// no pasaron ese mismo día (ver Hallazgo de liquidar-y-luego-ingresar).
+export function ayerArgentinaISO(): string {
+  const [y, m, d] = hoyArgentinaISO().split("-").map(Number);
+  const fecha = new Date(Date.UTC(y, m - 1, d));
+  fecha.setUTCDate(fecha.getUTCDate() - 1);
+  return fecha.toISOString().slice(0, 10);
+}

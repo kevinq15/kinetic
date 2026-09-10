@@ -44,6 +44,18 @@ export default async function Home() {
             <Link href="/planes" className="text-blue-600 hover:underline">
               Gestionar catálogo de planes →
             </Link>
+            <Link
+              href="/liquidaciones"
+              className="text-blue-600 hover:underline"
+            >
+              Liquidaciones →
+            </Link>
+            <Link
+              href="/caja/egreso"
+              className="text-blue-600 hover:underline"
+            >
+              Registrar egreso →
+            </Link>
           </>
         )}
       </div>
