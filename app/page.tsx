@@ -20,9 +20,14 @@ export default async function Home() {
       <p className="text-gray-600">Sprint 1 en construcción.</p>
 
       {sesion.cargo === "gerente" && (
-        <Link href="/usuarios" className="text-blue-600 hover:underline">
-          Gestionar usuarios internos →
-        </Link>
+        <div className="flex flex-col items-center gap-2">
+          <Link href="/usuarios" className="text-blue-600 hover:underline">
+            Gestionar usuarios internos →
+          </Link>
+          <Link href="/planes" className="text-blue-600 hover:underline">
+            Gestionar catálogo de planes →
+          </Link>
+        </div>
       )}
 
       <form action={logoutAction}>

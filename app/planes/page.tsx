@@ -2,23 +2,23 @@ import Link from "next/link";
 import { requerirGerente } from "@/lib/session";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-export default async function UsuariosPage() {
+export default async function PlanesPage() {
   await requerirGerente();
 
-  const { data: usuarios, error } = await supabaseAdmin
-    .from("usuarios")
-    .select("id, nombre, usuario, cargo, activo")
+  const { data: planes, error } = await supabaseAdmin
+    .from("planes")
+    .select("id, nombre, cantidad_pases, duracion_dias, precio, activo")
     .order("nombre", { ascending: true });
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Usuarios internos</h1>
+        <h1 className="text-2xl font-semibold">Catálogo de planes</h1>
         <Link
-          href="/usuarios/nuevo"
+          href="/planes/nuevo"
           className="rounded bg-black px-4 py-2 font-medium text-white"
         >
-          + Crear usuario
+          + Crear plan
         </Link>
       </div>
 
@@ -36,22 +36,24 @@ export default async function UsuariosPage() {
         <thead>
           <tr className="border-b border-gray-300">
             <th className="py-2">Nombre</th>
-            <th className="py-2">Usuario</th>
-            <th className="py-2">Cargo</th>
+            <th className="py-2">Pases</th>
+            <th className="py-2">Duración</th>
+            <th className="py-2">Precio</th>
             <th className="py-2">Estado</th>
             <th className="py-2"></th>
           </tr>
         </thead>
         <tbody>
-          {(usuarios ?? []).map((u) => (
-            <tr key={u.id} className="border-b border-gray-100">
-              <td className="py-2">{u.nombre}</td>
-              <td className="py-2">{u.usuario}</td>
-              <td className="py-2 capitalize">{u.cargo}</td>
-              <td className="py-2">{u.activo ? "Activo" : "Dado de baja"}</td>
+          {(planes ?? []).map((p) => (
+            <tr key={p.id} className="border-b border-gray-100">
+              <td className="py-2">{p.nombre}</td>
+              <td className="py-2">{p.cantidad_pases}</td>
+              <td className="py-2">{p.duracion_dias} días</td>
+              <td className="py-2">${p.precio}</td>
+              <td className="py-2">{p.activo ? "Activo" : "Dado de baja"}</td>
               <td className="py-2">
                 <Link
-                  href={`/usuarios/${u.id}`}
+                  href={`/planes/${p.id}`}
                   className="text-blue-600 hover:underline"
                 >
                   Editar
@@ -62,9 +64,9 @@ export default async function UsuariosPage() {
         </tbody>
       </table>
 
-      {usuarios && usuarios.length === 0 && (
+      {planes && planes.length === 0 && (
         <p className="text-sm text-gray-500">
-          Todavía no hay usuarios cargados.
+          Todavía no hay planes cargados.
         </p>
       )}
     </main>
