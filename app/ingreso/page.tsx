@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { hoyArgentinaISO, hoyArgentinaDiaMes } from "@/lib/fecha";
 import ConfirmarIngresoForm from "./ConfirmarIngresoForm";
 import VenderPlanInline from "./VenderPlanInline";
+import DeshacerIngresoForm from "./DeshacerIngresoForm";
 
 type Socio = {
   id: string;
@@ -31,9 +32,14 @@ type CoachOpcion = { coachId: string; nombre: string; esGerente: boolean };
 export default async function IngresoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ dni?: string; ok?: string }>;
+  searchParams: Promise<{
+    dni?: string;
+    ok?: string;
+    ingresoId?: string;
+    deshecho?: string;
+  }>;
 }) {
-  const { dni, ok } = await searchParams;
+  const { dni, ok, ingresoId, deshecho } = await searchParams;
   const dniLimpio = dni?.trim() ?? "";
 
   let socio: Socio | null = null;
@@ -153,8 +159,17 @@ export default async function IngresoPage({
       </Link>
 
       {ok === "1" && (
-        <p className="rounded border border-green-200 bg-green-50 p-3 text-sm text-green-800">
-          Ingreso confirmado.
+        <div className="rounded border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+          <p>Ingreso confirmado.</p>
+          {ingresoId && dniLimpio && (
+            <DeshacerIngresoForm ingresoId={ingresoId} dni={dniLimpio} />
+          )}
+        </div>
+      )}
+
+      {deshecho === "1" && (
+        <p className="rounded border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+          Ingreso deshecho: se devolvió el pase.
         </p>
       )}
 

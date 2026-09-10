@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { obtenerSesion } from "@/lib/session";
+import { obtenerSesion, requerirGerente } from "@/lib/session";
 
 export type EditarSocioState = {
   error: string | null;
@@ -56,5 +56,70 @@ export async function editarSocioAction(
   }
 
   revalidatePath(`/socios/${id}`);
+  return { error: null, ok: true };
+}
+
+// ---------- Anular venta (RF-VEN-05, RF-SOC-04, RF-CAJ-05) ----------
+
+export type AnularVentaState = {
+  error: string | null;
+  advertencia?: { consumidos: number } | null;
+  ok?: boolean;
+};
+
+export async function anularVentaAction(
+  _prevState: AnularVentaState,
+  formData: FormData
+): Promise<AnularVentaState> {
+  const sesion = await requerirGerente();
+
+  const ventaId = String(formData.get("venta_id") ?? "").trim();
+  const confirmado = formData.get("confirmado") === "true";
+
+  if (!ventaId) {
+    return { error: "No se encontró la venta." };
+  }
+
+  const { data: venta } = await supabaseAdmin
+    .from("ventas")
+    .select("id, socio_id, plan_id, pases_restantes, anulada")
+    .eq("id", ventaId)
+    .maybeSingle();
+
+  if (!venta) {
+    return { error: "No se encontró la venta." };
+  }
+  if (venta.anulada) {
+    return { error: "Esta venta ya estaba anulada." };
+  }
+
+  // RF-VEN-05: si el socio ya consumió pases de este plan, se avisa (con
+  // cuántos) y se pide confirmar antes de anular. No bloquea la anulación.
+  if (!confirmado) {
+    const { data: plan } = await supabaseAdmin
+      .from("planes")
+      .select("cantidad_pases")
+      .eq("id", venta.plan_id)
+      .maybeSingle();
+
+    const consumidos = plan
+      ? plan.cantidad_pases - venta.pases_restantes
+      : 0;
+
+    if (consumidos > 0) {
+      return { error: null, advertencia: { consumidos } };
+    }
+  }
+
+  const { error } = await supabaseAdmin.rpc("anular_venta", {
+    p_venta_id: ventaId,
+    p_usuario_id: sesion.usuarioId,
+  });
+
+  if (error) {
+    return { error: `No se pudo anular la venta: ${error.message}` };
+  }
+
+  revalidatePath(`/socios/${venta.socio_id}`);
   return { error: null, ok: true };
 }

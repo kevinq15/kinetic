@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { requerirGerente } from "@/lib/session";
 
@@ -48,4 +49,41 @@ export async function confirmarLiquidacionAction(
   }
 
   redirect("/liquidaciones");
+}
+
+// ---------- Anular liquidación (RF-LIQ-09, HU-16) ----------
+
+export type AnularLiquidacionState = {
+  error: string | null;
+  ok?: boolean;
+};
+
+// Solo se puede anular la liquidación más recente de un coach — la
+// función en la base lo revalida y rechaza cualquier otra (ver el
+// comentario de anular_liquidacion() en el schema para el motivo).
+export async function anularLiquidacionAction(
+  _prevState: AnularLiquidacionState,
+  formData: FormData
+): Promise<AnularLiquidacionState> {
+  const sesion = await requerirGerente();
+
+  const liquidacionId = String(formData.get("liquidacion_id") ?? "").trim();
+  const coachId = String(formData.get("coach_id") ?? "").trim();
+
+  if (!liquidacionId) {
+    return { error: "No se encontró la liquidación." };
+  }
+
+  const { error } = await supabaseAdmin.rpc("anular_liquidacion", {
+    p_liquidacion_id: liquidacionId,
+    p_usuario_id: sesion.usuarioId,
+  });
+
+  if (error) {
+    return { error: `No se pudo anular la liquidación: ${error.message}` };
+  }
+
+  revalidatePath(`/liquidaciones/${coachId}`);
+  revalidatePath("/liquidaciones");
+  return { error: null, ok: true };
 }

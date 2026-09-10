@@ -29,17 +29,62 @@ export async function confirmarIngresoAction(
     return { error: "Faltan datos para confirmar el ingreso." };
   }
 
-  const { error } = await supabaseAdmin.rpc("confirmar_ingreso", {
-    p_socio_id: socioId,
-    p_coach_id: coachId,
+  const { data, error } = await supabaseAdmin
+    .rpc("confirmar_ingreso", {
+      p_socio_id: socioId,
+      p_coach_id: coachId,
+      p_usuario_id: sesion.usuarioId,
+    })
+    .single();
+
+  if (error || !data) {
+    return {
+      error: `No se pudo confirmar el ingreso: ${error?.message ?? "error desconocido"}`,
+    };
+  }
+
+  // El id del ingreso viaja por la URL para poder ofrecer "Deshacer" en
+  // la misma pantalla justo después de confirmar (RF-ING-11 / HU-15).
+  const ingreso = data as { id: string };
+  redirect(
+    `/ingreso?dni=${encodeURIComponent(dni)}&ok=1&ingresoId=${ingreso.id}`
+  );
+}
+
+export type AnularIngresoState = {
+  error: string | null;
+};
+
+// RF-ING-11 / HU-15: deshacer un ingreso recién confirmado por error (se
+// eligió mal el socio o el coach). Devuelve el pase y ese entrenamiento
+// deja de contar para la liquidación del coach — toda la lógica real
+// vive en anular_ingreso() en la base.
+export async function anularIngresoAction(
+  _prevState: AnularIngresoState,
+  formData: FormData
+): Promise<AnularIngresoState> {
+  const sesion = await obtenerSesion();
+  if (!sesion) {
+    return { error: "Tenés que estar logueado." };
+  }
+
+  const ingresoId = String(formData.get("ingreso_id") ?? "").trim();
+  const dni = String(formData.get("dni") ?? "").trim();
+
+  if (!ingresoId) {
+    return { error: "No se encontró el ingreso." };
+  }
+
+  const { error } = await supabaseAdmin.rpc("anular_ingreso", {
+    p_ingreso_id: ingresoId,
     p_usuario_id: sesion.usuarioId,
   });
 
   if (error) {
-    return { error: `No se pudo confirmar el ingreso: ${error.message}` };
+    return { error: `No se pudo deshacer el ingreso: ${error.message}` };
   }
 
-  redirect(`/ingreso?dni=${encodeURIComponent(dni)}&ok=1`);
+  redirect(`/ingreso?dni=${encodeURIComponent(dni)}&deshecho=1`);
 }
 
 export type VentaIngresoState = {

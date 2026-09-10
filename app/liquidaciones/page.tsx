@@ -82,16 +82,17 @@ export default async function LiquidacionesPage() {
               </td>
               <td className="py-2 pr-4">{f.cantidadPendiente}</td>
               <td className="py-2">
-                {f.cantidadPendiente > 0 ? (
-                  <Link
-                    href={`/liquidaciones/${f.coachId}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Liquidar →
-                  </Link>
-                ) : (
-                  <span className="text-sm text-gray-400">Nada pendiente</span>
-                )}
+                {/* Siempre hay que poder entrar a esta pantalla, aunque
+                    no haya nada pendiente: es donde está el botón para
+                    anular la última liquidación (RF-LIQ-09 / HU-16), y
+                    sin nada pendiente ese coach no tenía otra forma de
+                    llegar ahí (bug reportado al probar HU-16). */}
+                <Link
+                  href={`/liquidaciones/${f.coachId}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {f.cantidadPendiente > 0 ? "Liquidar →" : "Ver →"}
+                </Link>
               </td>
             </tr>
           ))}

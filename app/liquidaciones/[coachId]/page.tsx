@@ -4,11 +4,21 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { requerirGerente } from "@/lib/session";
 import { ayerArgentinaISO } from "@/lib/fecha";
 import ConfirmarLiquidacionForm from "./ConfirmarLiquidacionForm";
+import AnularLiquidacionForm from "./AnularLiquidacionForm";
 
 type Periodo = {
   periodo_desde: string;
   periodo_hasta: string;
   cantidad: number;
+};
+
+type UltimaLiquidacion = {
+  id: string;
+  periodo_desde: string;
+  periodo_hasta: string;
+  cantidad_entrenamientos: number;
+  monto_total: number;
+  fecha_hora: string;
 };
 
 export default async function LiquidarCoachPage({
@@ -61,6 +71,20 @@ export default async function LiquidarCoachPage({
     .single();
   const periodo = periodoData as Periodo | null;
 
+  // RF-LIQ-09 / HU-16: solo la liquidación más reciente de este coach se
+  // puede anular (la base lo revalida igual). Si existe, se ofrece acá.
+  const { data: ultimaLiquidacion } = await supabaseAdmin
+    .from("liquidaciones")
+    .select(
+      "id, periodo_desde, periodo_hasta, cantidad_entrenamientos, monto_total, fecha_hora"
+    )
+    .eq("coach_id", coachId)
+    .eq("anulada", false)
+    .order("periodo_hasta", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const liquidacion = ultimaLiquidacion as UltimaLiquidacion | null;
+
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-6">
       <h1 className="text-2xl font-semibold">Liquidar a {usuario.nombre}</h1>
@@ -76,6 +100,33 @@ export default async function LiquidarCoachPage({
           Este coach está dado de baja. Sigue apareciendo acá hasta que se
           le termine de pagar lo pendiente.
         </p>
+      )}
+
+      {liquidacion && (
+        <section className="rounded border border-gray-200 p-4 text-sm">
+          <h2 className="mb-2 font-medium">Última liquidación</h2>
+          <p>
+            {liquidacion.cantidad_entrenamientos} entrenamiento(s) — $
+            {liquidacion.monto_total.toFixed(2)} — pagada el{" "}
+            {new Date(liquidacion.fecha_hora).toLocaleString("es-AR", {
+              timeZone: "America/Argentina/Buenos_Aires",
+            })}
+          </p>
+          <p className="mt-1 text-xs text-gray-500">
+            Cubre hasta{" "}
+            {new Date(liquidacion.periodo_hasta).toLocaleString("es-AR", {
+              timeZone: "America/Argentina/Buenos_Aires",
+            })}
+            . Si fue un error, se puede anular acá — se revierte el egreso
+            de caja y sus entrenamientos vuelven a quedar pendientes.
+          </p>
+          <div className="mt-3">
+            <AnularLiquidacionForm
+              liquidacionId={liquidacion.id}
+              coachId={coach.id}
+            />
+          </div>
+        </section>
       )}
 
       <form className="flex max-w-sm items-end gap-2">

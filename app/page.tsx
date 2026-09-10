@@ -50,11 +50,8 @@ export default async function Home() {
             >
               Liquidaciones →
             </Link>
-            <Link
-              href="/caja/egreso"
-              className="text-blue-600 hover:underline"
-            >
-              Registrar egreso →
+            <Link href="/caja" className="text-blue-600 hover:underline">
+              Caja →
             </Link>
           </>
         )}
