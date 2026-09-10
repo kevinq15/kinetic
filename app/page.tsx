@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { obtenerSesion } from "@/lib/session";
 import { logoutAction } from "./actions";
 
@@ -16,9 +17,14 @@ export default async function Home() {
       <h1 className="text-2xl font-semibold">
         Hola, {sesion.nombre} ({sesion.cargo})
       </h1>
-      <p className="text-gray-600">
-        Sprint 1 en construcción — esta es la pantalla base ya logueada.
-      </p>
+      <p className="text-gray-600">Sprint 1 en construcción.</p>
+
+      {sesion.cargo === "gerente" && (
+        <Link href="/usuarios" className="text-blue-600 hover:underline">
+          Gestionar usuarios internos →
+        </Link>
+      )}
+
       <form action={logoutAction}>
         <button
           type="submit"
