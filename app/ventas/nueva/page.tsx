@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import VentaForm from "./VentaForm";
+import { alertWarning, linkVolver, pageTitle } from "@/lib/ui";
 
 export default async function NuevaVentaPage({
   searchParams,
@@ -33,14 +34,18 @@ export default async function NuevaVentaPage({
     .order("nombre", { ascending: true });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Vender un plan</h1>
-      <Link href="/socios" className="text-sm text-gray-500 hover:underline">
-        ← Volver a socios
-      </Link>
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
+      <div className="flex flex-col gap-1">
+        <Link href="/socios" className={linkVolver}>
+          ← Volver a socios
+        </Link>
+        <h1 className={pageTitle}>
+          Vender un plan
+        </h1>
+      </div>
 
       {planes && planes.length === 0 && (
-        <p className="text-sm text-amber-700">
+        <p className={alertWarning}>
           Todavía no hay ningún plan activo en el catálogo — creá uno primero
           en Gestionar catálogo de planes.
         </p>

@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import { confirmarIngresoAction, type IngresoState } from "./actions";
+import { btnPrimaryLg, chip, chipInput, label, textoError } from "@/lib/ui";
+import { BarbellSpinner } from "@/components/Spinner";
 
 const estadoInicial: IngresoState = { error: null };
 
@@ -29,29 +31,35 @@ export default function ConfirmarIngresoForm({
       <input type="hidden" name="dni" value={dni} />
 
       <div>
-        <label htmlFor="coach_id" className="mb-1 block text-sm font-medium">
-          Entrena con
-        </label>
+        <p className={label}>Entrena con</p>
         {/* RF-ING-03: la selección nunca queda vacía — viene con el
-            Gerente preseleccionado. */}
-        <select
-          id="coach_id"
-          name="coach_id"
-          required
-          defaultValue={coachPorDefecto}
-          className="w-full rounded border border-gray-300 px-3 py-2"
-        >
+            Gerente preseleccionado. Son pocas opciones (los coaches
+            disponibles hoy), así que unos "chips" grandes y tocables
+            quedan mucho mejor en un mostrador/tablet que un <select>
+            nativo perdido al lado de botones grandes — y siguen siendo
+            radios de verdad, sin JS extra, para que el form ande igual. */}
+        <div className="flex flex-wrap gap-2">
           {coaches.map((c) => (
-            <option key={c.coachId} value={c.coachId}>
-              {c.nombre}
-              {c.esGerente ? " (Gerente)" : ""}
-            </option>
+            <label key={c.coachId}>
+              <input
+                type="radio"
+                name="coach_id"
+                value={c.coachId}
+                required
+                defaultChecked={c.coachId === coachPorDefecto}
+                className={chipInput}
+              />
+              <span className={chip}>
+                {c.nombre}
+                {c.esGerente ? " · Gerente" : ""}
+              </span>
+            </label>
           ))}
-        </select>
+        </div>
       </div>
 
       {state.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className={textoError} role="alert">
           {state.error}
         </p>
       )}
@@ -59,9 +67,16 @@ export default function ConfirmarIngresoForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded bg-black py-3 text-lg font-medium text-white disabled:opacity-50"
+        className={`${btnPrimaryLg} w-full`}
       >
-        {pending ? "Confirmando..." : "Confirmar ingreso"}
+        {pending ? (
+          <>
+            <BarbellSpinner className="h-4 w-4" />
+            Confirmando...
+          </>
+        ) : (
+          "Confirmar ingreso"
+        )}
       </button>
     </form>
   );

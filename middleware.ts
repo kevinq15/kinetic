@@ -25,6 +25,13 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Corre en todo menos los archivos estáticos internos de Next.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Corre en todo menos los archivos estáticos internos de Next Y los
+  // archivos públicos propios (como /logo-kinetic.png). Sin la segunda
+  // parte, un archivo suelto en /public quedaba atrapado como si fuera
+  // una ruta protegida: sin sesión, el middleware lo redirigía a
+  // /login (HTML) en vez de dejar pasar la imagen — el logo del header
+  // se veía roto por este motivo, no por el archivo en sí.
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico)$).*)",
+  ],
 };

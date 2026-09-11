@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { venderPlanIngresoAction, type VentaIngresoState } from "./actions";
+import { btnPrimary, label, select, input, textoError } from "@/lib/ui";
 
 const estadoInicial: VentaIngresoState = { error: null };
 
@@ -33,7 +34,7 @@ export default function VenderPlanInline({
       <input type="hidden" name="dni" value={dni} />
 
       <div>
-        <label htmlFor="plan_id" className="mb-1 block text-sm font-medium">
+        <label htmlFor="plan_id" className={label}>
           Plan
         </label>
         <select
@@ -41,7 +42,7 @@ export default function VenderPlanInline({
           name="plan_id"
           required
           defaultValue=""
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={select}
         >
           <option value="" disabled>
             Elegir...
@@ -56,10 +57,7 @@ export default function VenderPlanInline({
       </div>
 
       <div>
-        <label
-          htmlFor="porcentaje_descuento"
-          className="mb-1 block text-sm font-medium"
-        >
+        <label htmlFor="porcentaje_descuento" className={label}>
           Descuento (%)
         </label>
         <input
@@ -70,12 +68,12 @@ export default function VenderPlanInline({
           max={100}
           step="0.01"
           defaultValue={0}
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label htmlFor="medio_pago" className="mb-1 block text-sm font-medium">
+        <label htmlFor="medio_pago" className={label}>
           Medio de pago
         </label>
         <select
@@ -83,7 +81,7 @@ export default function VenderPlanInline({
           name="medio_pago"
           required
           defaultValue=""
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={select}
         >
           <option value="" disabled>
             Elegir...
@@ -95,16 +93,12 @@ export default function VenderPlanInline({
       </div>
 
       {state.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className={textoError} role="alert">
           {state.error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black py-2 font-medium text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className={btnPrimary}>
         {pending ? "Vendiendo..." : "Vender y habilitar"}
       </button>
     </form>

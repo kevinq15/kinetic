@@ -1,6 +1,16 @@
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import CoachToggle from "./CoachToggle";
+import {
+  linkVolver,
+  pageTitle,
+  tabla,
+  tablaCell,
+  tablaHeadCell,
+  tablaHeadRow,
+  tablaRow,
+  tablaWrap,
+} from "@/lib/ui";
 
 type Coach = {
   coachId: string;
@@ -46,45 +56,51 @@ export default async function CoachesPage() {
   });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Disponibilidad de coaches</h1>
-      <Link href="/" className="text-sm text-gray-500 hover:underline">
-        ← Volver
-      </Link>
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
+      <div className="flex flex-col gap-1">
+        <Link href="/" className={linkVolver}>
+          ← Volver
+        </Link>
+        <h1 className={pageTitle}>
+          Disponibilidad de coaches
+        </h1>
+      </div>
 
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-brand-text-muted">
         Solo los coaches marcados como disponibles acá van a aparecer para
         elegir en la pantalla de ingreso. El Gerente siempre está
         disponible.
       </p>
 
-      <table className="w-full border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b border-gray-300">
-            <th className="py-2 pr-4">Nombre</th>
-            <th className="py-2 pr-4">Cargo</th>
-            <th className="py-2">Disponibilidad</th>
-          </tr>
-        </thead>
-        <tbody>
-          {lista.map((c) => (
-            <tr key={c.coachId} className="border-b border-gray-100">
-              <td className="py-2 pr-4">{c.nombre}</td>
-              <td className="py-2 pr-4 capitalize">{c.cargo}</td>
-              <td className="py-2">
-                <CoachToggle
-                  coachId={c.coachId}
-                  disponible={c.disponible}
-                  esGerente={c.cargo === "gerente"}
-                />
-              </td>
+      <div className={tablaWrap}>
+        <table className={tabla}>
+          <thead>
+            <tr className={tablaHeadRow}>
+              <th className={tablaHeadCell}>Nombre</th>
+              <th className={tablaHeadCell}>Cargo</th>
+              <th className={tablaHeadCell}>Disponibilidad</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {lista.map((c) => (
+              <tr key={c.coachId} className={tablaRow}>
+                <td className={tablaCell}>{c.nombre}</td>
+                <td className={`${tablaCell} capitalize`}>{c.cargo}</td>
+                <td className={tablaCell}>
+                  <CoachToggle
+                    coachId={c.coachId}
+                    disponible={c.disponible}
+                    esGerente={c.cargo === "gerente"}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {lista.length === 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-brand-text-muted">
           Todavía no hay coaches cargados.
         </p>
       )}

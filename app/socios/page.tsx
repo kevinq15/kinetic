@@ -1,5 +1,21 @@
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import {
+  btnPrimary,
+  btnSecondary,
+  card,
+  input,
+  linkAccion,
+  linkVolver,
+  pageTitle,
+  tabla,
+  tablaCell,
+  tablaHeadCell,
+  tablaHeadRow,
+  tablaRow,
+  tablaWrap,
+  textoError,
+} from "@/lib/ui";
 
 export default async function SociosPage({
   searchParams,
@@ -28,20 +44,18 @@ export default async function SociosPage({
     .order("nombre", { ascending: true });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Socios</h1>
-        <Link
-          href="/socios/nuevo"
-          className="rounded bg-black px-4 py-2 font-medium text-white"
-        >
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <Link href="/" className={linkVolver}>
+            ← Volver
+          </Link>
+          <h1 className={pageTitle}>Socios</h1>
+        </div>
+        <Link href="/socios/nuevo" className={btnPrimary}>
           + Socio nuevo
         </Link>
       </div>
-
-      <Link href="/" className="text-sm text-gray-500 hover:underline">
-        ← Volver
-      </Link>
 
       <form className="flex max-w-sm gap-2">
         <input
@@ -49,23 +63,20 @@ export default async function SociosPage({
           name="dni"
           defaultValue={dniLimpio}
           placeholder="Buscar por DNI"
-          className="flex-1 rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
-        <button
-          type="submit"
-          className="rounded border border-gray-300 px-4 py-2 font-medium hover:bg-gray-50"
-        >
+        <button type="submit" className={btnSecondary}>
           Buscar
         </button>
       </form>
 
       {buscado && resultado && (
-        <div className="rounded border border-gray-200 p-4">
-          <p className="font-medium">{resultado.nombre}</p>
-          <p className="text-sm text-gray-500">DNI {resultado.dni}</p>
+        <div className={card}>
+          <p className="font-medium text-brand-text">{resultado.nombre}</p>
+          <p className="text-sm text-brand-text-muted">DNI {resultado.dni}</p>
           <Link
             href={`/socios/${resultado.id}`}
-            className="mt-2 inline-block text-blue-600 hover:underline"
+            className={`${linkAccion} mt-2 inline-block`}
           >
             Ver ficha →
           </Link>
@@ -73,55 +84,50 @@ export default async function SociosPage({
       )}
 
       {buscado && !resultado && (
-        <div className="rounded border border-gray-200 p-4">
-          <p className="text-sm text-gray-600">
+        <div className={card}>
+          <p className="text-sm text-brand-text-muted">
             No se encontró ningún socio con DNI {dniLimpio}.
           </p>
           <Link
             href={`/socios/nuevo?dni=${encodeURIComponent(dniLimpio)}`}
-            className="mt-2 inline-block text-blue-600 hover:underline"
+            className={`${linkAccion} mt-2 inline-block`}
           >
             Cargar socio nuevo →
           </Link>
         </div>
       )}
 
-      {error && (
-        <p className="text-sm text-red-600">
-          No se pudo cargar la lista: {error.message}
-        </p>
-      )}
+      {error && <p className={textoError}>No se pudo cargar la lista: {error.message}</p>}
 
-      <table className="w-full border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b border-gray-300">
-            <th className="py-2 pr-4">Nombre</th>
-            <th className="py-2 pr-4">DNI</th>
-            <th className="py-2 pr-4">Teléfono</th>
-            <th className="py-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {(socios ?? []).map((s) => (
-            <tr key={s.id} className="border-b border-gray-100">
-              <td className="py-2 pr-4">{s.nombre}</td>
-              <td className="py-2 pr-4">{s.dni}</td>
-              <td className="py-2 pr-4">{s.telefono ?? "-"}</td>
-              <td className="py-2">
-                <Link
-                  href={`/socios/${s.id}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  Ver ficha
-                </Link>
-              </td>
+      <div className={tablaWrap}>
+        <table className={tabla}>
+          <thead>
+            <tr className={tablaHeadRow}>
+              <th className={tablaHeadCell}>Nombre</th>
+              <th className={tablaHeadCell}>DNI</th>
+              <th className={tablaHeadCell}>Teléfono</th>
+              <th className={tablaHeadCell}></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {(socios ?? []).map((s) => (
+              <tr key={s.id} className={tablaRow}>
+                <td className={tablaCell}>{s.nombre}</td>
+                <td className={tablaCell}>{s.dni}</td>
+                <td className={tablaCell}>{s.telefono ?? "-"}</td>
+                <td className={tablaCell}>
+                  <Link href={`/socios/${s.id}`} className={linkAccion}>
+                    Ver ficha
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {socios && socios.length === 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-brand-text-muted">
           Todavía no hay socios cargados.
         </p>
       )}

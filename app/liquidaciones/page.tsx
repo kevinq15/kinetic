@@ -1,6 +1,17 @@
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { requerirGerente } from "@/lib/session";
+import {
+  linkAccion,
+  linkVolver,
+  pageTitle,
+  tabla,
+  tablaCell,
+  tablaHeadCell,
+  tablaHeadRow,
+  tablaRow,
+  tablaWrap,
+} from "@/lib/ui";
 
 type Pendiente = { cantidad: number; monto: number };
 
@@ -55,52 +66,55 @@ export default async function LiquidacionesPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Liquidaciones</h1>
-      <Link href="/" className="text-sm text-gray-500 hover:underline">
-        ← Volver
-      </Link>
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
+      <div className="flex flex-col gap-1">
+        <Link href="/" className={linkVolver}>
+          ← Volver
+        </Link>
+        <h1 className={pageTitle}>
+          Liquidaciones
+        </h1>
+      </div>
 
-      <table className="w-full border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b border-gray-300">
-            <th className="py-2 pr-4">Coach</th>
-            <th className="py-2 pr-4">Entrenamientos pendientes</th>
-            <th className="py-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filas.map((f) => (
-            <tr key={f.coachId} className="border-b border-gray-100">
-              <td className="py-2 pr-4">
-                {f.nombre}
-                {!f.activo && (
-                  <span className="ml-2 text-xs text-amber-700">
-                    (dado de baja)
-                  </span>
-                )}
-              </td>
-              <td className="py-2 pr-4">{f.cantidadPendiente}</td>
-              <td className="py-2">
-                {/* Siempre hay que poder entrar a esta pantalla, aunque
-                    no haya nada pendiente: es donde está el botón para
-                    anular la última liquidación (RF-LIQ-09 / HU-16), y
-                    sin nada pendiente ese coach no tenía otra forma de
-                    llegar ahí (bug reportado al probar HU-16). */}
-                <Link
-                  href={`/liquidaciones/${f.coachId}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {f.cantidadPendiente > 0 ? "Liquidar →" : "Ver →"}
-                </Link>
-              </td>
+      <div className={tablaWrap}>
+        <table className={tabla}>
+          <thead>
+            <tr className={tablaHeadRow}>
+              <th className={tablaHeadCell}>Coach</th>
+              <th className={tablaHeadCell}>Entrenamientos pendientes</th>
+              <th className={tablaHeadCell}></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filas.map((f) => (
+              <tr key={f.coachId} className={tablaRow}>
+                <td className={tablaCell}>
+                  {f.nombre}
+                  {!f.activo && (
+                    <span className="ml-2 rounded-full border border-amber-900/60 bg-amber-950/40 px-2 py-0.5 text-xs font-medium text-amber-300">
+                      dado de baja
+                    </span>
+                  )}
+                </td>
+                <td className={tablaCell}>{f.cantidadPendiente}</td>
+                <td className={tablaCell}>
+                  {/* Siempre hay que poder entrar a esta pantalla, aunque
+                      no haya nada pendiente: es donde está el botón para
+                      anular la última liquidación (RF-LIQ-09 / HU-16), y
+                      sin nada pendiente ese coach no tenía otra forma de
+                      llegar ahí (bug reportado al probar HU-16). */}
+                  <Link href={`/liquidaciones/${f.coachId}`} className={linkAccion}>
+                    {f.cantidadPendiente > 0 ? "Liquidar →" : "Ver →"}
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {filas.length === 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-brand-text-muted">
           Todavía no hay coaches cargados.
         </p>
       )}

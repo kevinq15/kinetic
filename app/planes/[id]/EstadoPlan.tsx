@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { cambiarEstadoPlanAction, type EstadoPlanState } from "./actions";
+import { btnDanger, btnSecondary, textoError } from "@/lib/ui";
 
 const estadoInicial: EstadoPlanState = { error: null };
 
@@ -35,22 +36,18 @@ export default function EstadoPlan({
       />
 
       {activo && (
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-brand-text-muted">
           Un plan dado de baja no se puede vender más, pero las ventas
           existentes lo siguen referenciando sin problema.
         </p>
       )}
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p className={textoError}>{state.error}</p>}
 
       <button
         type="submit"
         disabled={pending}
-        className={
-          activo
-            ? "rounded border border-red-300 px-4 py-2 font-medium text-red-700 hover:bg-red-50"
-            : "rounded border border-gray-300 px-4 py-2 font-medium hover:bg-gray-50"
-        }
+        className={activo ? btnDanger : btnSecondary}
       >
         {pending
           ? "Procesando..."

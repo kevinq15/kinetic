@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { obtenerSesion } from "@/lib/session";
 import EditarSocioForm from "./EditarSocioForm";
 import AnularVentaForm from "./AnularVentaForm";
+import { btnPrimary, card, linkVolver, pageTitle } from "@/lib/ui";
 
 export default async function SocioPage({
   params,
@@ -46,32 +47,38 @@ export default async function SocioPage({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-8 p-6">
-      <Link href="/socios" className="text-sm text-gray-500 hover:underline">
-        ← Volver a socios
-      </Link>
-
-      <div>
-        <h1 className="text-2xl font-semibold">{socio.nombre}</h1>
-        <p className="text-sm text-gray-500">DNI {socio.dni}</p>
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 p-6">
+      <div className="flex flex-col gap-1">
+        <Link href="/socios" className={linkVolver}>
+          ← Volver a socios
+        </Link>
+        <h1 className={pageTitle}>
+          {socio.nombre}
+        </h1>
+        <p className="text-sm text-brand-text-muted">DNI {socio.dni}</p>
       </div>
 
-      <section className="rounded border border-gray-200 p-4">
-        <h2 className="mb-2 text-lg font-medium">Plan actual</h2>
+      <section className={card}>
+        <h2 className="mb-2 text-lg font-medium text-brand-text">
+          Plan actual
+        </h2>
         {ventaActiva ? (
-          <div className="text-sm">
-            <p>Plan: {nombrePlan}</p>
-            <p>Pases restantes: {ventaActiva.pases_restantes}</p>
-            <p>Vence: {ventaActiva.fecha_vencimiento}</p>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="rounded-full border border-brand-border bg-brand-surface-2 px-3 py-1 text-brand-text">
+              {nombrePlan}
+            </span>
+            <span className="rounded-full border border-brand-border bg-brand-surface-2 px-3 py-1 text-brand-text-muted">
+              {ventaActiva.pases_restantes} pase(s) restante(s)
+            </span>
+            <span className="rounded-full border border-brand-border bg-brand-surface-2 px-3 py-1 text-brand-text-muted">
+              Vence {ventaActiva.fecha_vencimiento}
+            </span>
           </div>
         ) : (
-          <p className="text-sm text-gray-500">Sin plan actual.</p>
+          <p className="text-sm text-brand-text-muted">Sin plan actual.</p>
         )}
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <Link
-            href={`/ventas/nueva?socioId=${socio.id}`}
-            className="inline-block rounded bg-black px-4 py-2 text-sm font-medium text-white"
-          >
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <Link href={`/ventas/nueva?socioId=${socio.id}`} className={btnPrimary}>
             Vender un plan
           </Link>
 
@@ -83,8 +90,10 @@ export default async function SocioPage({
         </div>
       </section>
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-lg font-medium">Datos del socio</h2>
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-medium text-brand-text">
+          Datos del socio
+        </h2>
         <EditarSocioForm socio={socio} />
       </section>
     </main>

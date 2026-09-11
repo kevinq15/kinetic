@@ -6,6 +6,7 @@ import {
   cambiarDisponibilidadAction,
   type DisponibilidadState,
 } from "./actions";
+import { btnPrimary, btnSecondary, textoError } from "@/lib/ui";
 
 const estadoInicial: DisponibilidadState = { error: null };
 
@@ -32,7 +33,11 @@ export default function CoachToggle({
   }, [state.ok, router]);
 
   if (esGerente) {
-    return <span className="text-sm text-gray-500">Siempre disponible</span>;
+    return (
+      <span className="text-sm text-brand-text-muted">
+        Siempre disponible
+      </span>
+    );
   }
 
   return (
@@ -46,11 +51,7 @@ export default function CoachToggle({
       <button
         type="submit"
         disabled={pending}
-        className={
-          disponible
-            ? "rounded border border-gray-300 px-3 py-1 text-sm font-medium hover:bg-gray-50"
-            : "rounded bg-black px-3 py-1 text-sm font-medium text-white"
-        }
+        className={disponible ? btnSecondary : btnPrimary}
       >
         {pending
           ? "Guardando..."
@@ -58,7 +59,7 @@ export default function CoachToggle({
             ? "Marcar no disponible"
             : "Marcar disponible"}
       </button>
-      {state.error && <p className="text-xs text-red-600">{state.error}</p>}
+      {state.error && <p className={textoError}>{state.error}</p>}
     </form>
   );
 }

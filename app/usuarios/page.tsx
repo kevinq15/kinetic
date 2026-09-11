@@ -1,6 +1,21 @@
 import Link from "next/link";
 import { requerirGerente } from "@/lib/session";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import {
+  alertError,
+  badgeNeutral,
+  badgeSuccess,
+  btnPrimary,
+  linkAccion,
+  linkVolver,
+  pageTitle,
+  tabla,
+  tablaCell,
+  tablaHeadCell,
+  tablaHeadRow,
+  tablaRow,
+  tablaWrap,
+} from "@/lib/ui";
 
 export default async function UsuariosPage() {
   await requerirGerente();
@@ -11,59 +26,58 @@ export default async function UsuariosPage() {
     .order("nombre", { ascending: true });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Usuarios internos</h1>
-        <Link
-          href="/usuarios/nuevo"
-          className="rounded bg-black px-4 py-2 font-medium text-white"
-        >
-          + Crear usuario
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
+      <div className="flex flex-col gap-1">
+        <Link href="/" className={linkVolver}>
+          ← Volver
         </Link>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className={pageTitle}>Usuarios internos</h1>
+          <Link href="/usuarios/nuevo" className={btnPrimary}>
+            + Crear usuario
+          </Link>
+        </div>
       </div>
 
-      <Link href="/" className="text-sm text-gray-500 hover:underline">
-        ← Volver
-      </Link>
-
       {error && (
-        <p className="text-sm text-red-600">
-          No se pudo cargar la lista: {error.message}
-        </p>
+        <p className={alertError}>No se pudo cargar la lista: {error.message}</p>
       )}
 
-      <table className="w-full border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b border-gray-300">
-            <th className="py-2">Nombre</th>
-            <th className="py-2">Usuario</th>
-            <th className="py-2">Cargo</th>
-            <th className="py-2">Estado</th>
-            <th className="py-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {(usuarios ?? []).map((u) => (
-            <tr key={u.id} className="border-b border-gray-100">
-              <td className="py-2">{u.nombre}</td>
-              <td className="py-2">{u.usuario}</td>
-              <td className="py-2 capitalize">{u.cargo}</td>
-              <td className="py-2">{u.activo ? "Activo" : "Dado de baja"}</td>
-              <td className="py-2">
-                <Link
-                  href={`/usuarios/${u.id}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  Editar
-                </Link>
-              </td>
+      <div className={tablaWrap}>
+        <table className={tabla}>
+          <thead>
+            <tr className={tablaHeadRow}>
+              <th className={tablaHeadCell}>Nombre</th>
+              <th className={tablaHeadCell}>Usuario</th>
+              <th className={tablaHeadCell}>Cargo</th>
+              <th className={tablaHeadCell}>Estado</th>
+              <th className={tablaHeadCell}></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {(usuarios ?? []).map((u) => (
+              <tr key={u.id} className={tablaRow}>
+                <td className={tablaCell}>{u.nombre}</td>
+                <td className={tablaCell}>{u.usuario}</td>
+                <td className={`${tablaCell} capitalize`}>{u.cargo}</td>
+                <td className={tablaCell}>
+                  <span className={u.activo ? badgeSuccess : badgeNeutral}>
+                    {u.activo ? "Activo" : "Dado de baja"}
+                  </span>
+                </td>
+                <td className={tablaCell}>
+                  <Link href={`/usuarios/${u.id}`} className={linkAccion}>
+                    Editar
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {usuarios && usuarios.length === 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-brand-text-muted">
           Todavía no hay usuarios cargados.
         </p>
       )}

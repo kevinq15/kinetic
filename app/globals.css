@@ -1,8 +1,26 @@
 @import "tailwindcss";
 
+/* Paleta de marca de Kinetic (Sprint 6): negros, grises y verde del
+   logo (lobo). El verde se sacó a ojo directamente del PNG del logo
+   (~rgb(114,193,55)). Naranjas/rojos/azules se mantienen aparte, solo
+   para alertas y estados (éxito/error/advertencia/info) — nunca como
+   color de marca. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #f2f2f2;
+
+  --color-brand-bg: #0a0a0a;
+  --color-brand-header: #000000;
+  --color-brand-surface: #161616;
+  --color-brand-surface-2: #202020;
+  --color-brand-border: #2a2a2a;
+  --color-brand-border-strong: #3a3a3a;
+  --color-brand-text: #f2f2f2;
+  --color-brand-text-muted: #9a9a9a;
+
+  --color-brand-primary: #7ac33e;
+  --color-brand-primary-hover: #66a833;
+  --color-brand-primary-soft: #16210d;
 }
 
 @theme inline {
@@ -10,17 +28,148 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-brand-bg: var(--color-brand-bg);
+  --color-brand-header: var(--color-brand-header);
+  --color-brand-surface: var(--color-brand-surface);
+  --color-brand-surface-2: var(--color-brand-surface-2);
+  --color-brand-border: var(--color-brand-border);
+  --color-brand-border-strong: var(--color-brand-border-strong);
+  --color-brand-text: var(--color-brand-text);
+  --color-brand-text-muted: var(--color-brand-text-muted);
+  --color-brand-primary: var(--color-brand-primary);
+  --color-brand-primary-hover: var(--color-brand-primary-hover);
+  --color-brand-primary-soft: var(--color-brand-primary-soft);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Kinetic siempre es oscuro — no es un tema que dependa de la
+   preferencia del sistema operativo del usuario, es la identidad del
+   gimnasio. Por eso no hay un bloque @media (prefers-color-scheme). */
+
+body {
+  /* Fondo con un poquito de profundidad (un halo verde apenas
+     perceptible arriba a la izquierda) en vez de negro plano — da
+     sensación de "premium" sin dejar de ser oscuro y sobrio. */
+  background:
+    radial-gradient(ellipse 1200px 600px at 15% -10%, rgba(122, 195, 62, 0.07), transparent 60%),
+    var(--background);
+  background-attachment: fixed;
+  color: var(--foreground);
+  /* Antes esto decía "Arial, Helvetica, sans-serif" a pesar de que
+     next/font ya venía cargando Geist (ver layout.tsx) — la variable
+     estaba definida pero nunca se usaba acá, así que toda la app
+     renderizaba con la tipografía por defecto del sistema. Con Geist
+     puesta de verdad, todo el texto (tablas incluidas) se ve más
+     prolijo y menos "plano". */
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Brillo suave y lento alrededor del logo chico (header). */
+@keyframes brand-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(122, 195, 62, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 14px 3px rgba(122, 195, 62, 0.45);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.brand-logo-glow {
+  animation: brand-glow 3.5s ease-in-out infinite;
+}
+
+/* Versión más intensa para el logo protagonista (login, hero del
+   home) — mismo latido, más alcance y más opacidad. */
+@keyframes brand-glow-lg {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(122, 195, 62, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 45px 12px rgba(122, 195, 62, 0.5);
+  }
+}
+
+.brand-logo-glow-lg {
+  animation: brand-glow-lg 3.5s ease-in-out infinite;
+}
+
+/* Texto con degradé de marca — solo para acentos puntuales de
+   titulares grandes (el guiño "agresivo" en la jerarquía tipográfica),
+   nunca para párrafos ni botones. */
+.brand-gradient-text {
+  background: linear-gradient(120deg, #9ae05a 0%, var(--color-brand-primary) 55%, #4d7c22 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Entrada suave para tarjetas/tablas/secciones al aparecer en pantalla
+   — no es una librería de animación, es una sola clase reusada desde
+   lib/ui.ts (card, tarjeta, tablaWrap) para que toda la app se sienta
+   con más vida sin tener que animar cada pantalla a mano. */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.35s ease-out both;
+}
+
+/* Transición entre pantallas: layout.tsx envuelve {children} en un
+   componente que cambia de key en cada ruta (PageTransition), así este
+   fade se vuelve a disparar en cada navegación sin recargar el header
+   ni traer una librería de animaciones solo para esto. */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-page-fade {
+  animation: page-fade-in 0.28s ease-out both;
+}
+
+/* Ícono de "barra con discos" para estados de carga (botones en
+   pending, pantalla de carga global) — mismo lenguaje que un spinner
+   de toda la vida, con la forma de algo del gimnasio en vez de un
+   círculo genérico. Ver components/Spinner.tsx. */
+@keyframes barbell-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-barbell-spin {
+  animation: barbell-spin 0.9s linear infinite;
+}
+
+/* Huellas de lobo para la pantalla de carga global — se van
+   "encendiendo" una atrás de otra, como si el lobo caminara mientras
+   se espera la respuesta del servidor. */
+@keyframes paw-step {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.85);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.animate-paw-step {
+  animation: paw-step 1.4s ease-in-out infinite;
 }

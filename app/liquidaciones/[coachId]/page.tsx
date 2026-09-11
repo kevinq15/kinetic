@@ -5,6 +5,7 @@ import { requerirGerente } from "@/lib/session";
 import { ayerArgentinaISO } from "@/lib/fecha";
 import ConfirmarLiquidacionForm from "./ConfirmarLiquidacionForm";
 import AnularLiquidacionForm from "./AnularLiquidacionForm";
+import { alertError, alertWarning, btnSecondary, card, input, label, linkVolver, pageTitle } from "@/lib/ui";
 
 type Periodo = {
   periodo_desde: string;
@@ -86,33 +87,36 @@ export default async function LiquidarCoachPage({
   const liquidacion = ultimaLiquidacion as UltimaLiquidacion | null;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Liquidar a {usuario.nombre}</h1>
-      <Link
-        href="/liquidaciones"
-        className="text-sm text-gray-500 hover:underline"
-      >
-        ← Volver a liquidaciones
-      </Link>
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
+      <div className="flex flex-col gap-1">
+        <Link href="/liquidaciones" className={linkVolver}>
+          ← Volver a liquidaciones
+        </Link>
+        <h1 className={pageTitle}>
+          Liquidar a {usuario.nombre}
+        </h1>
+      </div>
 
       {!usuario.activo && (
-        <p className="rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        <p className={alertWarning}>
           Este coach está dado de baja. Sigue apareciendo acá hasta que se
           le termine de pagar lo pendiente.
         </p>
       )}
 
       {liquidacion && (
-        <section className="rounded border border-gray-200 p-4 text-sm">
-          <h2 className="mb-2 font-medium">Última liquidación</h2>
-          <p>
+        <section className={card}>
+          <h2 className="mb-2 font-medium text-brand-text">
+            Última liquidación
+          </h2>
+          <p className="text-sm text-brand-text">
             {liquidacion.cantidad_entrenamientos} entrenamiento(s) — $
             {liquidacion.monto_total.toFixed(2)} — pagada el{" "}
             {new Date(liquidacion.fecha_hora).toLocaleString("es-AR", {
               timeZone: "America/Argentina/Buenos_Aires",
             })}
           </p>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-brand-text-muted">
             Cubre hasta{" "}
             {new Date(liquidacion.periodo_hasta).toLocaleString("es-AR", {
               timeZone: "America/Argentina/Buenos_Aires",
@@ -129,9 +133,13 @@ export default async function LiquidarCoachPage({
         </section>
       )}
 
-      <form className="flex max-w-sm items-end gap-2">
+      {/* En columna hasta `sm:` — con el texto de ayuda adentro del
+          mismo flex que el botón, "items-end" terminaba alineando el
+          botón contra el párrafo de abajo en vez de contra el input, y
+          en un celular angosto además quedaba todo apretado. */}
+      <form className="flex max-w-sm flex-col gap-2 sm:flex-row sm:items-start">
         <div className="flex-1">
-          <label htmlFor="fecha" className="mb-1 block text-sm font-medium">
+          <label htmlFor="fecha" className={label}>
             Fecha de corte (opcional)
           </label>
           <input
@@ -140,28 +148,26 @@ export default async function LiquidarCoachPage({
             type="date"
             max={maxFecha}
             defaultValue={fechaCorte}
-            className="w-full rounded border border-gray-300 px-3 py-2"
+            className={input}
           />
-          <p className="mt-1 text-xs text-gray-500">
-            Vacío = liquidar hasta ahora mismo. Completalo solo si querés
-            dejar afuera, a propósito, los entrenamientos de hoy.
-          </p>
         </div>
         <button
           type="submit"
-          className="rounded border border-gray-300 px-4 py-2 font-medium hover:bg-gray-50"
+          className={`${btnSecondary} w-full sm:mt-6 sm:w-auto`}
         >
           Recalcular
         </button>
       </form>
+      <p className="max-w-sm text-xs text-brand-text-muted">
+        Vacío = liquidar hasta ahora mismo. Completalo solo si querés dejar
+        afuera, a propósito, los entrenamientos de hoy.
+      </p>
 
-      {periodoError && (
-        <p className="text-sm text-red-600">{periodoError.message}</p>
-      )}
+      {periodoError && <p className={alertError}>{periodoError.message}</p>}
 
       {periodo && (
-        <div className="rounded border border-gray-200 p-4 text-sm">
-          <p>
+        <div className={card}>
+          <p className="text-sm text-brand-text">
             Período: desde{" "}
             {new Date(periodo.periodo_desde).toLocaleString("es-AR", {
               timeZone: "America/Argentina/Buenos_Aires",
@@ -171,7 +177,7 @@ export default async function LiquidarCoachPage({
               timeZone: "America/Argentina/Buenos_Aires",
             })}
           </p>
-          <p className="mt-1 font-medium">
+          <p className="mt-1 font-medium text-brand-text">
             Entrenamientos en el período: {periodo.cantidad}
           </p>
         </div>
@@ -187,7 +193,7 @@ export default async function LiquidarCoachPage({
       )}
 
       {periodo && periodo.cantidad === 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-brand-text-muted">
           No hay entrenamientos pendientes en ese período.
         </p>
       )}

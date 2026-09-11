@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { anularIngresoAction, type AnularIngresoState } from "./actions";
+import { textoError } from "@/lib/ui";
 
 const estadoInicial: AnularIngresoState = { error: null };
 
@@ -28,12 +29,12 @@ export default function DeshacerIngresoForm({
       <button
         type="submit"
         disabled={pending}
-        className="w-fit text-sm font-medium text-red-700 underline hover:no-underline disabled:opacity-50"
+        className="w-fit text-sm font-medium text-red-400 underline decoration-red-400/40 underline-offset-2 hover:decoration-red-400 disabled:opacity-50"
       >
         {pending ? "Deshaciendo..." : "¿Fue un error? Deshacer este ingreso"}
       </button>
       {state.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className={textoError} role="alert">
           {state.error}
         </p>
       )}

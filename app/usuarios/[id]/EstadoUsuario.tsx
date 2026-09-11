@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { cambiarEstadoAction, type EstadoState } from "./actions";
+import { alertWarning, btnDanger, btnSecondary, textoError } from "@/lib/ui";
 
 const estadoInicial: EstadoState = { error: null };
 
@@ -32,14 +33,10 @@ export default function EstadoUsuario({
       <form action={formAction} className="flex flex-col gap-2">
         <input type="hidden" name="id" value={usuarioId} />
         <input type="hidden" name="accion" value="reactivar" />
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded border border-gray-300 px-4 py-2 font-medium hover:bg-gray-50"
-        >
+        <button type="submit" disabled={pending} className={btnSecondary}>
           {pending ? "Reactivando..." : "Reactivar usuario"}
         </button>
-        {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+        {state.error && <p className={textoError}>{state.error}</p>}
       </form>
     );
   }
@@ -55,7 +52,7 @@ export default function EstadoUsuario({
       />
 
       {state.advertencia && (
-        <p className="text-sm text-amber-700">
+        <p className={alertWarning}>
           Este coach tiene {state.advertencia.cantidad} entrenamiento(s) sin
           liquidar, por ${state.advertencia.monto}. Va a seguir apareciendo en
           la pantalla de liquidación hasta que se le pague. ¿Confirmás la baja
@@ -63,13 +60,9 @@ export default function EstadoUsuario({
         </p>
       )}
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p className={textoError}>{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded border border-red-300 px-4 py-2 font-medium text-red-700 hover:bg-red-50"
-      >
+      <button type="submit" disabled={pending} className={`${btnDanger} w-fit`}>
         {pending
           ? "Procesando..."
           : state.advertencia

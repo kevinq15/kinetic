@@ -5,6 +5,7 @@ import {
   restablecerPasswordAction,
   type RestablecerPasswordState,
 } from "./actions";
+import { btnSecondary, input, label, textoError, textoExito } from "@/lib/ui";
 
 const estadoInicial: RestablecerPasswordState = { error: null };
 
@@ -22,7 +23,7 @@ export default function RestablecerPasswordForm({
     <form action={formAction} className="flex max-w-sm flex-col gap-4">
       <input type="hidden" name="id" value={usuarioId} />
       <div>
-        <label htmlFor="password" className="mb-1 block text-sm font-medium">
+        <label htmlFor="password" className={label}>
           Nueva contraseña
         </label>
         <input
@@ -31,20 +32,14 @@ export default function RestablecerPasswordForm({
           type="password"
           minLength={6}
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.ok && (
-        <p className="text-sm text-green-700">Contraseña actualizada.</p>
-      )}
+      {state.error && <p className={textoError}>{state.error}</p>}
+      {state.ok && <p className={textoExito}>Contraseña actualizada.</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded border border-gray-300 px-4 py-2 font-medium hover:bg-gray-50"
-      >
+      <button type="submit" disabled={pending} className={`${btnSecondary} w-fit`}>
         {pending ? "Actualizando..." : "Restablecer contraseña"}
       </button>
     </form>

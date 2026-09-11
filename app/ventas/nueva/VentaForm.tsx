@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import { registrarVentaAction, type VentaState } from "../actions";
+import { btnPrimaryLg, card, chip, chipInput, input, label, select, textoError } from "@/lib/ui";
+import { BarbellSpinner } from "@/components/Spinner";
 
 const estadoInicial: VentaState = { error: null };
 
@@ -30,13 +32,17 @@ export default function VentaForm({
   return (
     <form action={formAction} className="flex max-w-sm flex-col gap-4">
       <input type="hidden" name="socio_id" value={socio.id} />
-      <p className="text-sm text-gray-600">
-        Socio: <span className="font-medium">{socio.nombre}</span> (DNI{" "}
-        {socio.dni})
-      </p>
+
+      <div className={card}>
+        <p className="text-sm text-brand-text-muted">
+          Socio:{" "}
+          <span className="font-medium text-brand-text">{socio.nombre}</span>{" "}
+          (DNI {socio.dni})
+        </p>
+      </div>
 
       <div>
-        <label htmlFor="plan_id" className="mb-1 block text-sm font-medium">
+        <label htmlFor="plan_id" className={label}>
           Plan
         </label>
         <select
@@ -44,7 +50,7 @@ export default function VentaForm({
           name="plan_id"
           required
           defaultValue=""
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={select}
         >
           <option value="" disabled>
             Elegir...
@@ -59,10 +65,7 @@ export default function VentaForm({
       </div>
 
       <div>
-        <label
-          htmlFor="porcentaje_descuento"
-          className="mb-1 block text-sm font-medium"
-        >
+        <label htmlFor="porcentaje_descuento" className={label}>
           Descuento (%)
         </label>
         <input
@@ -73,42 +76,52 @@ export default function VentaForm({
           max={100}
           step="0.01"
           defaultValue={0}
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label htmlFor="medio_pago" className="mb-1 block text-sm font-medium">
-          Medio de pago
-        </label>
-        <select
-          id="medio_pago"
-          name="medio_pago"
-          required
-          defaultValue=""
-          className="w-full rounded border border-gray-300 px-3 py-2"
-        >
-          <option value="" disabled>
-            Elegir...
-          </option>
-          <option value="efectivo">Efectivo</option>
-          <option value="tarjeta">Tarjeta</option>
-          <option value="transferencia">Transferencia</option>
-        </select>
+        <p className={label}>Medio de pago</p>
+        {/* Mismo criterio que el selector de coach en /ingreso: pocas
+            opciones fijas, así que chips grandes ganan a un <select>
+            nativo — y siguen siendo radios de verdad. */}
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              { value: "efectivo", label: "Efectivo" },
+              { value: "tarjeta", label: "Tarjeta" },
+              { value: "transferencia", label: "Transferencia" },
+            ] as const
+          ).map((opcion) => (
+            <label key={opcion.value}>
+              <input
+                type="radio"
+                name="medio_pago"
+                value={opcion.value}
+                required
+                className={chipInput}
+              />
+              <span className={chip}>{opcion.label}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
       {state.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className={textoError} role="alert">
           {state.error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black py-2 font-medium text-white disabled:opacity-50"
-      >
-        {pending ? "Registrando..." : "Confirmar venta"}
+      <button type="submit" disabled={pending} className={`${btnPrimaryLg} w-full`}>
+        {pending ? (
+          <>
+            <BarbellSpinner className="h-4 w-4" />
+            Registrando...
+          </>
+        ) : (
+          "Confirmar venta"
+        )}
       </button>
     </form>
   );

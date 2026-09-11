@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { editarPlanAction, type EditarPlanState } from "./actions";
+import { btnPrimary, input, label, textoError, textoExito } from "@/lib/ui";
 
 const estadoInicial: EditarPlanState = { error: null };
 
@@ -24,7 +25,7 @@ export default function EditarPlanForm({ plan }: { plan: Plan }) {
       <input type="hidden" name="id" value={plan.id} />
 
       <div>
-        <label htmlFor="nombre" className="mb-1 block text-sm font-medium">
+        <label htmlFor="nombre" className={label}>
           Nombre del plan
         </label>
         <input
@@ -33,15 +34,12 @@ export default function EditarPlanForm({ plan }: { plan: Plan }) {
           type="text"
           defaultValue={plan.nombre}
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label
-          htmlFor="cantidad_pases"
-          className="mb-1 block text-sm font-medium"
-        >
+        <label htmlFor="cantidad_pases" className={label}>
           Cantidad de pases
         </label>
         <input
@@ -52,15 +50,12 @@ export default function EditarPlanForm({ plan }: { plan: Plan }) {
           step={1}
           defaultValue={plan.cantidad_pases}
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label
-          htmlFor="duracion_dias"
-          className="mb-1 block text-sm font-medium"
-        >
+        <label htmlFor="duracion_dias" className={label}>
           Duración en días
         </label>
         <input
@@ -71,12 +66,12 @@ export default function EditarPlanForm({ plan }: { plan: Plan }) {
           step={1}
           defaultValue={plan.duracion_dias}
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label htmlFor="precio" className="mb-1 block text-sm font-medium">
+        <label htmlFor="precio" className={label}>
           Precio
         </label>
         <input
@@ -87,18 +82,14 @@ export default function EditarPlanForm({ plan }: { plan: Plan }) {
           step="0.01"
           defaultValue={plan.precio}
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.ok && <p className="text-sm text-green-700">Guardado.</p>}
+      {state.error && <p className={textoError}>{state.error}</p>}
+      {state.ok && <p className={textoExito}>Guardado.</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black py-2 font-medium text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className={btnPrimary}>
         {pending ? "Guardando..." : "Guardar cambios"}
       </button>
     </form>

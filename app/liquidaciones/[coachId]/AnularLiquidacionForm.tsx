@@ -6,6 +6,7 @@ import {
   anularLiquidacionAction,
   type AnularLiquidacionState,
 } from "../actions";
+import { btnDanger, textoError, textoExito } from "@/lib/ui";
 
 const estadoInicial: AnularLiquidacionState = { error: null };
 
@@ -35,7 +36,7 @@ export default function AnularLiquidacionForm({
 
   if (state.ok) {
     return (
-      <p className="text-sm text-green-700">
+      <p className={textoExito}>
         Liquidación anulada. Los entrenamientos de ese período volvieron a
         quedar pendientes.
       </p>
@@ -46,12 +47,8 @@ export default function AnularLiquidacionForm({
     <form action={formAction} className="flex flex-col gap-2">
       <input type="hidden" name="liquidacion_id" value={liquidacionId} />
       <input type="hidden" name="coach_id" value={coachId} />
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-fit rounded border border-red-300 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
-      >
+      {state.error && <p className={textoError}>{state.error}</p>}
+      <button type="submit" disabled={pending} className={`${btnDanger} w-fit`}>
         {pending ? "Anulando..." : "Anular esta liquidación"}
       </button>
     </form>

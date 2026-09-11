@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { editarUsuarioAction, type EditarUsuarioState } from "./actions";
+import { btnPrimary, input, label, textoError, textoExito } from "@/lib/ui";
 
 const estadoInicial: EditarUsuarioState = { error: null };
 
@@ -25,31 +26,27 @@ export default function EditarUsuarioForm({ usuario }: { usuario: Usuario }) {
       <input type="hidden" name="id" value={usuario.id} />
 
       <div>
-        <label className="mb-1 block text-sm font-medium">
-          Usuario (no editable)
-        </label>
+        <label className={label}>Usuario (no editable)</label>
         <input
           type="text"
           value={usuario.usuario}
           disabled
-          className="w-full rounded border border-gray-200 bg-gray-100 px-3 py-2 text-gray-500"
+          className={`${input} cursor-not-allowed opacity-60`}
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium">
-          Cargo (no editable)
-        </label>
+        <label className={label}>Cargo (no editable)</label>
         <input
           type="text"
           value={usuario.cargo}
           disabled
-          className="w-full rounded border border-gray-200 bg-gray-100 px-3 py-2 capitalize text-gray-500"
+          className={`${input} cursor-not-allowed capitalize opacity-60`}
         />
       </div>
 
       <div>
-        <label htmlFor="nombre" className="mb-1 block text-sm font-medium">
+        <label htmlFor="nombre" className={label}>
           Nombre completo
         </label>
         <input
@@ -58,12 +55,12 @@ export default function EditarUsuarioForm({ usuario }: { usuario: Usuario }) {
           type="text"
           defaultValue={usuario.nombre}
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label htmlFor="dni" className="mb-1 block text-sm font-medium">
+        <label htmlFor="dni" className={label}>
           DNI
         </label>
         <input
@@ -72,12 +69,12 @@ export default function EditarUsuarioForm({ usuario }: { usuario: Usuario }) {
           type="text"
           defaultValue={usuario.dni}
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label htmlFor="mail" className="mb-1 block text-sm font-medium">
+        <label htmlFor="mail" className={label}>
           Mail (opcional)
         </label>
         <input
@@ -85,18 +82,14 @@ export default function EditarUsuarioForm({ usuario }: { usuario: Usuario }) {
           name="mail"
           type="email"
           defaultValue={usuario.mail ?? ""}
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.ok && <p className="text-sm text-green-700">Guardado.</p>}
+      {state.error && <p className={textoError}>{state.error}</p>}
+      {state.ok && <p className={textoExito}>Guardado.</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black py-2 font-medium text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className={btnPrimary}>
         {pending ? "Guardando..." : "Guardar cambios"}
       </button>
     </form>

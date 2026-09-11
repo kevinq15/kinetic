@@ -5,6 +5,7 @@ import {
   confirmarLiquidacionAction,
   type LiquidacionState,
 } from "../actions";
+import { btnPrimary, input, label, textoError } from "@/lib/ui";
 
 const estadoInicial: LiquidacionState = { error: null };
 
@@ -37,7 +38,7 @@ export default function ConfirmarLiquidacionForm({
       <input type="hidden" name="fecha_corte" value={fechaCorte} />
 
       <div>
-        <label htmlFor="monto" className="mb-1 block text-sm font-medium">
+        <label htmlFor="monto" className={label}>
           Monto por entrenamiento
         </label>
         <input
@@ -49,22 +50,18 @@ export default function ConfirmarLiquidacionForm({
           required
           value={montoTexto}
           onChange={(e) => setMontoTexto(e.target.value)}
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
-      <p className="text-sm">
+      <p className="text-sm text-brand-text">
         Total a pagar: {cantidad} × ${monto} ={" "}
         <span className="font-medium">${total.toFixed(2)}</span>
       </p>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p className={textoError}>{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black py-2 font-medium text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className={btnPrimary}>
         {pending ? "Confirmando..." : "Confirmar liquidación"}
       </button>
     </form>

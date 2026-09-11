@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { registrarEgresoAction, type EgresoState } from "./actions";
+import { btnPrimary, input, label, textarea, textoError, textoExito } from "@/lib/ui";
 
 const estadoInicial: EgresoState = { error: null };
 
@@ -34,7 +35,7 @@ export default function EgresoForm() {
       className="flex max-w-sm flex-col gap-4"
     >
       <div>
-        <label htmlFor="monto" className="mb-1 block text-sm font-medium">
+        <label htmlFor="monto" className={label}>
           Monto
         </label>
         <input
@@ -44,12 +45,12 @@ export default function EgresoForm() {
           min={0.01}
           step="0.01"
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label htmlFor="motivo" className="mb-1 block text-sm font-medium">
+        <label htmlFor="motivo" className={label}>
           Motivo
         </label>
         <textarea
@@ -58,24 +59,18 @@ export default function EgresoForm() {
           required
           rows={3}
           placeholder="Ej: Pago a recepcionista — quincena de septiembre"
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={textarea}
         />
       </div>
 
       {state.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className={textoError} role="alert">
           {state.error}
         </p>
       )}
-      {state.ok && (
-        <p className="text-sm text-green-700">Egreso registrado.</p>
-      )}
+      {state.ok && <p className={textoExito}>Egreso registrado.</p>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black py-2 font-medium text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className={btnPrimary}>
         {pending ? "Guardando..." : "Registrar egreso"}
       </button>
     </form>

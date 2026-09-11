@@ -4,6 +4,17 @@ import { hoyArgentinaISO, hoyArgentinaDiaMes } from "@/lib/fecha";
 import ConfirmarIngresoForm from "./ConfirmarIngresoForm";
 import VenderPlanInline from "./VenderPlanInline";
 import DeshacerIngresoForm from "./DeshacerIngresoForm";
+import {
+  alertBase,
+  alertError,
+  alertSuccess,
+  alertWarning,
+  btnPrimaryLg,
+  card,
+  linkAccion,
+  linkVolver,
+  pageTitle,
+} from "@/lib/ui";
 
 type Socio = {
   id: string;
@@ -152,14 +163,18 @@ export default async function IngresoPage({
   const coachPorDefecto = coaches.find((c) => c.esGerente)?.coachId ?? "";
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Ingreso al gimnasio</h1>
-      <Link href="/" className="text-sm text-gray-500 hover:underline">
-        ← Volver
-      </Link>
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
+      <div className="flex flex-col gap-1">
+        <Link href="/" className={linkVolver}>
+          ← Volver
+        </Link>
+        <h1 className={pageTitle}>
+          Ingreso al gimnasio
+        </h1>
+      </div>
 
       {ok === "1" && (
-        <div className="rounded border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+        <div className={alertSuccess}>
           <p>Ingreso confirmado.</p>
           {ingresoId && dniLimpio && (
             <DeshacerIngresoForm ingresoId={ingresoId} dni={dniLimpio} />
@@ -168,36 +183,39 @@ export default async function IngresoPage({
       )}
 
       {deshecho === "1" && (
-        <p className="rounded border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+        <p className={alertBase + " border-brand-border text-brand-text-muted"}>
           Ingreso deshecho: se devolvió el pase.
         </p>
       )}
 
-      <form className="flex max-w-sm gap-2">
+      {/* Pensado para tablet/mostrador: input y botón grandes, fáciles
+          de tocar. En un celular angosto el botón con texto en
+          mayúsculas no entraba al lado del input y se iba de la
+          pantalla (había que hacer scroll horizontal para verlo) — por
+          eso apila en columna hasta `sm:`, donde vuelven a quedar en
+          la misma fila como en tablet/mostrador. */}
+      <form className="flex flex-col gap-2 sm:flex-row">
         <input
           type="text"
           name="dni"
           defaultValue={dniLimpio}
           placeholder="DNI del socio"
           autoFocus
-          className="flex-1 rounded border border-gray-300 px-3 py-3 text-lg"
+          className="min-w-0 flex-1 rounded-lg border border-brand-border bg-brand-surface px-4 py-3 text-lg text-brand-text placeholder:text-brand-text-muted focus:border-brand-primary focus:outline-none"
         />
-        <button
-          type="submit"
-          className="rounded bg-black px-4 py-2 font-medium text-white"
-        >
+        <button type="submit" className={`${btnPrimaryLg} w-full sm:w-auto`}>
           Buscar
         </button>
       </form>
 
       {dniLimpio && !socio && (
-        <div className="rounded border border-gray-200 p-4">
-          <p className="text-sm text-gray-600">
+        <div className={card}>
+          <p className="text-sm text-brand-text-muted">
             No hay ningún socio registrado con DNI {dniLimpio}.
           </p>
           <Link
             href={`/socios/nuevo?dni=${encodeURIComponent(dniLimpio)}`}
-            className="mt-2 inline-block text-blue-600 hover:underline"
+            className={`${linkAccion} mt-2 inline-block`}
           >
             Cargar socio nuevo →
           </Link>
@@ -206,33 +224,40 @@ export default async function IngresoPage({
 
       {socio && (
         <div className="flex flex-col gap-4">
-          <div className="rounded border border-gray-200 p-4">
-            <p className="text-lg font-medium">{socio.nombre}</p>
-            <p className="text-sm text-gray-500">DNI {socio.dni}</p>
+          <div className={card}>
+            <p className="text-lg font-medium text-brand-text">
+              {socio.nombre}
+            </p>
+            <p className="text-sm text-brand-text-muted">DNI {socio.dni}</p>
             {venta && (
-              <p className="mt-2 text-sm">
-                Plan: {nombrePlan} — {venta.pases_restantes} pase(s)
-                restante(s) — vence {venta.fecha_vencimiento}
-              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+                <span className="rounded-full border border-brand-border bg-brand-surface-2 px-3 py-1 text-brand-text">
+                  {nombrePlan}
+                </span>
+                <span className="rounded-full border border-brand-border bg-brand-surface-2 px-3 py-1 text-brand-text-muted">
+                  {venta.pases_restantes} pase(s) restante(s)
+                </span>
+                <span className="rounded-full border border-brand-border bg-brand-surface-2 px-3 py-1 text-brand-text-muted">
+                  Vence {venta.fecha_vencimiento}
+                </span>
+              </div>
             )}
           </div>
 
           {esCumple && (
-            <p className="rounded border border-pink-200 bg-pink-50 p-3 text-sm text-pink-800">
+            <p className={`${alertBase} border-pink-900/60 bg-pink-950/40 text-pink-300`}>
               🎂 Hoy es el cumpleaños de {socio.nombre}.
             </p>
           )}
 
           {motivoBloqueo && (
-            <div className="flex flex-col gap-3 rounded border border-red-200 bg-red-50 p-4">
-              <p className="text-sm font-medium text-red-800">
-                Ingreso bloqueado: {motivoBloqueo}
-              </p>
-              <p className="text-sm text-red-900">
+            <div className={`${card} flex flex-col gap-3`}>
+              <p className={alertError}>Ingreso bloqueado: {motivoBloqueo}</p>
+              <p className="text-sm text-brand-text-muted">
                 Vender un plan nuevo ahora habilita el ingreso:
               </p>
               {planesActivos.length === 0 ? (
-                <p className="text-sm text-amber-700">
+                <p className={alertWarning}>
                   No hay ningún plan activo en el catálogo.
                 </p>
               ) : (
@@ -246,16 +271,14 @@ export default async function IngresoPage({
           )}
 
           {puedeEntrar && (
-            <div className="flex flex-col gap-3 rounded border border-gray-200 p-4">
+            <div className={`${card} flex flex-col gap-3`}>
               {avisoUltimaVisita && (
-                <p className="text-sm font-medium text-amber-700">
+                <p className={alertWarning}>
                   ⚠ Este es el último pase de su plan actual.
                 </p>
               )}
               {avisoVenceHoy && (
-                <p className="text-sm font-medium text-amber-700">
-                  ⚠ Su plan vence hoy.
-                </p>
+                <p className={alertWarning}>⚠ Su plan vence hoy.</p>
               )}
               <ConfirmarIngresoForm
                 socioId={socio.id}

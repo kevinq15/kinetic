@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { crearPlanAction, type CrearPlanState } from "../actions";
+import { btnPrimary, input, label, textoError } from "@/lib/ui";
 
 const estadoInicial: CrearPlanState = { error: null };
 
@@ -22,7 +23,7 @@ export default function NuevoPlanForm() {
   return (
     <form action={formAction} className="flex w-full max-w-sm flex-col gap-4">
       <div>
-        <label htmlFor="nombre" className="mb-1 block text-sm font-medium">
+        <label htmlFor="nombre" className={label}>
           Nombre del plan
         </label>
         <input
@@ -31,15 +32,12 @@ export default function NuevoPlanForm() {
           type="text"
           required
           placeholder="Ej: Mensual, Trimestral..."
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label
-          htmlFor="cantidad_pases"
-          className="mb-1 block text-sm font-medium"
-        >
+        <label htmlFor="cantidad_pases" className={label}>
           Cantidad de pases
         </label>
         <input
@@ -49,15 +47,12 @@ export default function NuevoPlanForm() {
           min={1}
           step={1}
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label
-          htmlFor="duracion_dias"
-          className="mb-1 block text-sm font-medium"
-        >
+        <label htmlFor="duracion_dias" className={label}>
           Duración en días
         </label>
         <input
@@ -67,16 +62,16 @@ export default function NuevoPlanForm() {
           min={1}
           step={1}
           defaultValue={30}
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-brand-text-muted">
           Por defecto 30 días, pero se puede cambiar (ej. 90 para un plan
           trimestral).
         </p>
       </div>
 
       <div>
-        <label htmlFor="precio" className="mb-1 block text-sm font-medium">
+        <label htmlFor="precio" className={label}>
           Precio
         </label>
         <input
@@ -86,21 +81,17 @@ export default function NuevoPlanForm() {
           min={0}
           step="0.01"
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       {state.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className={textoError} role="alert">
           {state.error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black py-2 font-medium text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className={btnPrimary}>
         {pending ? "Creando..." : "Crear plan"}
       </button>
     </form>

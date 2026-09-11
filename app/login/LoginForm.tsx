@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import { loginAction, type LoginState } from "./actions";
+import { btnPrimaryLg, input, label, textoError } from "@/lib/ui";
+import { BarbellSpinner } from "@/components/Spinner";
 
 const estadoInicial: LoginState = { error: null };
 
@@ -12,9 +14,9 @@ export default function LoginForm() {
   );
 
   return (
-    <form action={formAction} className="flex w-full max-w-sm flex-col gap-4">
+    <form action={formAction} className="flex w-full flex-col gap-4">
       <div>
-        <label htmlFor="usuario" className="mb-1 block text-sm font-medium">
+        <label htmlFor="usuario" className={label}>
           Usuario
         </label>
         <input
@@ -23,12 +25,12 @@ export default function LoginForm() {
           type="text"
           autoComplete="username"
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-1 block text-sm font-medium">
+        <label htmlFor="password" className={label}>
           Contraseña
         </label>
         <input
@@ -37,22 +39,25 @@ export default function LoginForm() {
           type="password"
           autoComplete="current-password"
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={input}
         />
       </div>
 
       {state.error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className={textoError} role="alert">
           {state.error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black py-2 font-medium text-white disabled:opacity-50"
-      >
-        {pending ? "Ingresando..." : "Ingresar"}
+      <button type="submit" disabled={pending} className={`${btnPrimaryLg} mt-1 w-full`}>
+        {pending ? (
+          <>
+            <BarbellSpinner className="h-4 w-4" />
+            Ingresando...
+          </>
+        ) : (
+          "Ingresar"
+        )}
       </button>
     </form>
   );
